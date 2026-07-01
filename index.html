@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <title>To Do List</title>
+</head>
+<body>
+    
+    <div class="container1"  id="c1">
+        <div class="head">
+            <h1>Task Manager</h1>
+        </div>
+        <input type="text" placeholder="Write something here" id="taskinput">
+        <button class="btn" onclick="display()">Add Task</button>
+
+        <div class="progress-section">
+            <h3>Progress</h3>
+            <div class="progress-bar">
+                <div id="progress-fill"></div>
+            </div>
+            <p id="progress-text"> 0 / 0  Tasks Completed</p>
+        </div>
+    </div>
+    <div class="container2" id="c2">
+        
+    </div>
+    
+    <script>
+        let tasks = [];//array created for store tasks
+        let editIndex = -1;
+        
+        function display(){
+            let task = document.getElementById("taskinput").value.trim() ;
+            if(task === ""){
+                return; // it is used to decline empty space task creation
+            }
+            console.log("editIndex = ",editIndex )
+            if(editIndex === -1){
+                tasks.push({
+                    text: task,
+                    completed: false
+                });
+            }
+            else{
+                tasks[editIndex].text = task;
+                editIndex = -1;
+            }
+           
+            document.getElementById("taskinput").value = ""
+            displayTasks();
+        }
+            
+            function displayTasks(){
+            
+            let container = document.getElementById("c2");
+            container.innerText = ""
+            
+                //Delete Button Code start from here
+            tasks.forEach((item , index) => {
+                let row = document.createElement("div");
+                row.classList.add("task-row");
+
+                let checkbox = document.createElement("input");
+                checkbox.type = "checkbox";
+                checkbox.checked = item.completed
+                checkbox.classList.add("checkbox");
+                checkbox.onchange = function(){
+                    item.completed = checkbox.checked;
+
+                    if(checkbox.checked){
+                        p.classList.add("completed")
+                    }
+                    else{
+                        p.classList.remove("completed")
+                    }
+                    updateProgress()
+                }
+
+                let deleteBtn = document.createElement("button");
+                deleteBtn.innerText = "Delete"
+                deleteBtn.classList.add("delete-btn")
+               
+                let p = document.createElement("p");
+                p.innerText = item.text;
+
+                if(item.completed){
+                    p.classList.add("completed")
+                }
+                
+
+            deleteBtn.onclick = function(){
+                let confirmDelete = confirm("Are you sure you want ro delete this task");
+                if(confirmDelete){
+                tasks.splice(index,1);
+                displayTasks();
+                }
+            };
+           
+            //Edit Button Code Starts from here
+            
+            let editBtn = document.createElement("button");
+            editBtn.innerText = "Update"
+            editBtn.classList.add("edit-btn")
+            editBtn.onclick = function(){
+                let confirmUpdate = confirm("Do you want to update this task")
+                if(confirmUpdate){
+                document.getElementById("taskinput").value = item.text;
+                editIndex = index;
+                }
+            };
+
+
+            row.appendChild(checkbox)
+            row.appendChild(p);
+            row.appendChild(deleteBtn);
+            container.appendChild(row)
+            row.appendChild(editBtn);
+
+            });
+
+            updateProgress();
+        
+            }
+
+            function updateProgress(){
+                let completed = tasks.filter(task => task.completed).length;
+                let total = tasks.length;
+                let percentage = 0;
+
+                if(total > 0){
+                    percentage = (completed / total) * 100
+                }
+                document.getElementById("progress-fill").style.width = percentage + "%";
+
+                document.getElementById("progress-text").innerText = completed + " / " + total +" "+"Tasks Completed";
+            }
+    </script>
+</body>
+</html>
